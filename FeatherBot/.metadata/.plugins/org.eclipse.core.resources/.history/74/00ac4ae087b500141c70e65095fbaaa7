@@ -1,0 +1,93 @@
+package featherBot;
+
+
+import org.powerbot.bot.rt4.client.Npc;
+import org.powerbot.script.Condition;
+import org.powerbot.script.Mouse;
+import org.powerbot.script.Random;
+import org.powerbot.script.rt4.ClientContext;
+import org.powerbot.script.rt4.Component;
+import org.powerbot.script.rt4.Item;
+
+public class Shop extends Task<ClientContext>{
+	private Mouse ourMouse = new Mouse(ctx);
+
+	public Shop(ClientContext ctx) {
+		super(ctx);
+	}
+
+	@Override
+	public boolean activate() {
+		return ctx.widgets.widget(378).component(17).valid();
+	}
+
+	@Override
+	public void execute() {
+		while(ctx.widgets.widget(378).component(17).valid()){
+			ctx.widgets.widget(378).component(17).click();
+			Condition.sleep(1200 + Random.getDelay());
+		}
+		org.powerbot.script.rt4.Npc shopOwner = ctx.npcs.select().id(4642).nearest().poll();
+		if(!shopOwner.inViewport()){
+			ctx.movement.step(shopOwner);
+		}
+		
+		while(!ctx.widgets.widget(300).component(0).valid()){
+			shopOwner.interact("Trade");
+			long startTime = System.currentTimeMillis(); //fetch starting time
+			while(!ctx.widgets.widget(300).component(0).valid() && (System.currentTimeMillis() - startTime) < 1200){}
+		}
+		
+		
+		
+		
+		
+		Condition.sleep(Random.getDelay());
+		Component shop = ctx.widgets.widget(300).component(75);
+		for(int j = 0; j < 3; j++){
+			buy10(11);
+		}
+		Condition.sleep(Random.getDelay());
+
+		Item[] inv = ctx.inventory.items();
+		Item curItem = containsPack(inv);
+		while(curItem != null){
+			curItem.click();
+			Condition.sleep(Random.getDelay());
+			inv = ctx.inventory.items();
+			curItem = containsPack(inv);
+		}
+		
+		while(ctx.widgets.widget(300).component(0).valid()){
+			ctx.widgets.widget(300).component(91).click();
+			Condition.sleep(Random.getDelay() + 400);
+		}
+
+	}
+
+	private Item containsPack(Item[] inv) {
+		for(Item i : inv){
+			if(i.id() == 11881)
+				return i;
+		}
+		return null;
+	}
+
+	private void buy10(int i) {
+		int x1, x2, rx, y1, y2, ry, xf, yf;
+		x1 = 80 + 47 * (i % 8);
+		y1 = 69 + 47 * (i / 8);
+		x2 = 111 + 47 * (i % 8);
+		y2 = 100 + 47 * (i / 8);
+		rx = Random.nextGaussian(x1, x2, 10);
+		ry = Random.nextGaussian(y1, y2, 10);
+		xf = Random.nextGaussian(rx - 65, rx + 65, 10);
+		yf = Random.nextGaussian(ry + 64, ry + 78, 10);
+		ourMouse.click(rx, ry, false);
+		//Condition.sleep(Random.getDelay());
+		ourMouse.click(xf, yf, true);
+		Condition.sleep(Random.getDelay());
+	}
+
+
+}

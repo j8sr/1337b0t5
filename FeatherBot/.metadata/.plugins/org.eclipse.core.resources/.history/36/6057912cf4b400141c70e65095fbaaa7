@@ -1,0 +1,22 @@
+package featherBot;
+
+import org.powerbot.script.ClientContext;
+
+public class Shop extends Task{
+
+	public Shop(ClientContext ctx) {
+		super(ctx);
+	}
+
+	@Override
+	public boolean activate() {
+		
+		return false;
+	}
+
+	@Override
+	public void execute() {
+		
+	}
+
+}
